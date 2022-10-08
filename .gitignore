@@ -1,0 +1,6 @@
+.env
+iniciar.txt
+setup_airflow.sh
+logs/*
+__pycache__
+plugins/*
