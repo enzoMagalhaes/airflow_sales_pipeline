@@ -43,20 +43,21 @@ def get_parquet_data():
                              if_exists='append',
                              index=False)
 
-# def check_tables():
-#
-#     query = """ SELECT COUNT(table_name) FROM
-#                 	information_schema.tables
-#                 WHERE
-#                     table_schema LIKE 'public%'
-#                  	AND
-#                 	table_name in ('dim_categorias','dim_funcionarios','fato_venda');
-#     """
-#
-#     postgres_hook = PostgresHook(postgres_conn_id='bix_output_db',schema='dw_vendas')
-#     tables_count = postgres_hook.get_pandas_df(sql=query)['count'].item()
-#
-#     if tables_count < 3:
+
+def check_sales_db_availability():
+    sales_db_hook = PostgresHook(postgres_conn_id='bix_vendas',schema='postgres')
+
+    query = """SELECT 1 FROM public.venda limit 1;"""
+    if not sales_db_hook.get_records(sql=query):
+        raise ValueError('CONEXAO COM O BANCO DE DADOS SALES MAL SUCEDIDA')
+
+def check_employees_api_availability():
+    httphook = HttpHook(http_conn_id="bix_api",method='GET')
+    httphook.run(endpoint='api_challenge_junior/',data={'id':1},extra_options={'check_response': True})
+
+def check_categories_parquet_api_availability():
+    httphook = HttpHook(http_conn_id="bix_parquet",method='GET')
+    httphook.run(endpoint='challenge_junior/categoria.parquet',extra_options={'check_response': True})
 
 
 
@@ -72,56 +73,66 @@ with DAG(
 
     start = DummyOperator(task_id='start_task')
 
-    # 
-    # check_if_tables_exist = PythonOperator(
-    #     task_id = 'check_if_tables_exist',
-    #     python_callable = check_tables
-    #
-    # )
+    with TaskGroup(group_id='check_data_sources_availability') as sources_check:
 
+        check_sales_db = PythonOperator(
+                task_id = 'check_sales_db_availability',
+                python_callable  = check_sales_db_availability
+            )
 
-    # with TaskGroup(group_id='check_data_sources_availability') as sources_check:
+        check_employees_api = PythonOperator(
+                task_id = 'check_employees_api_availability',
+                python_callable = check_employees_api_availability
+            )
+
+        check_parquet_api_storage = PythonOperator(
+                task_id = 'check_categories_parquet_api_availability',
+                python_callable = check_categories_parquet_api_availability
+            )
+
+        [check_sales_db,check_employees_api,check_parquet_api_storage]
 
 
 
     with TaskGroup(group_id='employees_pipeline') as employees_pipeline:
 
-        create_employees_table = PostgresOperator(
-            task_id = 'create_employees_table',
+        create_or_truncate_employees_table= PostgresOperator(
+            task_id = 'create_or_truncate_dim_funcionarios',
             postgres_conn_id='bix_output_db',
-            sql='create_dim_funcionarios.sql'
+            sql='create_or_truncate_dim_funcionarios.sql'
         )
 
         get_api_employees_data = PythonOperator(
-            task_id = 'get_api_employees_data',
+            task_id = 'get_api_employees_data_to_db',
             python_callable  = get_api_data
         )
 
-        create_employees_table >> get_api_employees_data
+        create_or_truncate_employees_table >> get_api_employees_data
 
 
     with TaskGroup(group_id='categories_pipeline') as categories_pipeline:
-        create_categories_table = PostgresOperator(
-            task_id = 'create_categories_table',
+
+        create_or_truncate_categories_table= PostgresOperator(
+            task_id = 'create_or_truncate_dim_categorias',
             postgres_conn_id='bix_output_db',
-            sql='create_dim_categorias.sql'
+            sql='create_or_truncate_dim_categorias.sql'
         )
 
+
         get_parquet_categories_data = PythonOperator(
-            task_id = 'get_parquet_data',
+            task_id = 'get_parquet_data_to_db',
             python_callable  = get_parquet_data
         )
 
-        create_categories_table >> get_parquet_categories_data
-
+        create_or_truncate_categories_table >> get_parquet_categories_data
 
     get_sales_data_to_db = GenericTransfer(
         task_id='get_sales_data_to_db',
         sql = 'get_source_sales_data.sql',
-        destination_table = 'fato_venda',
+        destination_table = 'fato_vendas',
         source_conn_id = 'bix_vendas',
         destination_conn_id = 'bix_output_db',
-        preoperator = 'create_fato_vendas.sql'
+        preoperator = 'create_or_truncate_fato_vendas.sql'
     )
 
     create_sales_view = PostgresOperator(
@@ -130,7 +141,4 @@ with DAG(
             sql='create_sales_view.sql'
     )
 
-
-    start >> [employees_pipeline,categories_pipeline] >> get_sales_data_to_db >> create_sales_view
-
-    # start >> [check_if_tables_exist,check_data_sources_availability] >> truncate_tables  >> [employees_pipeline,categories_pipeline] >> get_sales_data_to_db >> create_sales_view
+    start >> sources_check >> [employees_pipeline,categories_pipeline,get_sales_data_to_db] >> create_sales_view
