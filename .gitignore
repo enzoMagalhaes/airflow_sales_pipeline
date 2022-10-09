@@ -4,3 +4,4 @@ setup_airflow.sh
 logs/*
 __pycache__
 plugins/*
+__init__.py

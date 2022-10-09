@@ -43,7 +43,6 @@ def get_parquet_data():
                              if_exists='append',
                              index=False)
 
-
 def check_sales_db_availability():
     sales_db_hook = PostgresHook(postgres_conn_id='bix_vendas',schema='postgres')
 
@@ -71,7 +70,7 @@ with DAG(
     catchup=False
 ) as dag:
 
-    start = DummyOperator(task_id='start_task')
+    start = DummyOperator(task_id='start')
 
     with TaskGroup(group_id='check_data_sources_availability') as sources_check:
 
