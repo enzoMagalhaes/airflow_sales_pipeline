@@ -1,12 +1,12 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.hooks.http_hook import HttpHook
+from airflow.providers.http.hooks.http import HttpHook
 
 def check_sales_db_availability():
     sales_db_hook = PostgresHook(postgres_conn_id='bix_vendas',schema='postgres')
-
+    
     query = """SELECT 1 FROM public.venda limit 1;"""
     if not sales_db_hook.get_records(sql=query):
-        raise ValueError('CONEXAO COM O BANCO DE DADOS SALES MAL SUCEDIDA')
+        raise ValueError('CONEXAO COM O BANCO DE DADOS VENDAS MAL SUCEDIDA')
 
 def check_employees_api_availability():
     httphook = HttpHook(http_conn_id="bix_api",method='GET')

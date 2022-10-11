@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.utils.task_group import TaskGroup
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.operators.generic_transfer import GenericTransfer
@@ -29,7 +29,7 @@ with DAG(
     catchup=False
 ) as dag:
 
-    start = DummyOperator(task_id='start')
+    start = EmptyOperator(task_id='start')
 
     with TaskGroup(group_id='check_data_sources_availability') as sources_check:
 
