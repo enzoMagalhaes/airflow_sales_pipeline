@@ -4,3 +4,4 @@ setup_airflow.sh
 logs/*
 __pycache__
 __init__.py
+dw_vendas

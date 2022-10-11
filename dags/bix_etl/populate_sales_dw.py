@@ -5,11 +5,12 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.operators.generic_transfer import GenericTransfer
 from datetime import datetime,timedelta
+from pendulum import timezone
 
 from bix_etl.functions.helpers import get_api_data, get_parquet_data
 from bix_etl.functions.source_checks import (check_sales_db_availability,
-                                      check_employees_api_availability,
-                                      check_categories_parquet_api_availability)
+                                             check_employees_api_availability,
+                                             check_categories_parquet_api_availability)
 
 default_args = {
 
@@ -22,8 +23,8 @@ with DAG(
     dag_id = 'bix_etl',
     default_args = default_args,
     description = 'populate the DW with the sales, employees and product categories data',
-    start_date = datetime(2021,10,8,8),
-    schedule_interval='@daily',
+    start_date = datetime(2022,10,9,0,tzinfo=timezone("America/Sao_Paulo")),
+    schedule_interval='0 0 * * *',
     template_searchpath='/opt/airflow/include/sql',
     catchup=False
 ) as dag:

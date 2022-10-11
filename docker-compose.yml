@@ -100,7 +100,7 @@ services:
       POSTGRES_PASSWORD: bix_password
       POSTGRES_DB: dw_vendas
     volumes:
-       - bix_postgres_db:/data/postgres
+       - ./dw_vendas:/data/postgres
     ports:
       - "5432:5432"
     healthcheck:
@@ -297,4 +297,4 @@ services:
 
 volumes:
   postgres-db-volume:
-  bix_postgres_db:
+  dw_vendas:
