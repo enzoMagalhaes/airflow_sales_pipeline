@@ -24,7 +24,7 @@ with DAG(
     description = 'populate the DW with the sales, employees and product categories data',
     start_date = datetime(2022,10,9,0,tzinfo=timezone("America/Sao_Paulo")),
     schedule_interval='0 0 * * *',
-    template_searchpath='/opt/airflow/include/sql',
+    template_searchpath='/opt/airflow/include',
     catchup=False
 ) as dag:
 
@@ -56,7 +56,7 @@ with DAG(
         create_or_truncate_employees_table= PostgresOperator(
             task_id = 'create_or_truncate_dim_funcionarios',
             postgres_conn_id='bix_output_db',
-            sql='create_or_truncate_dim_funcionarios.sql'
+            sql='sql/create_or_truncate_dim_funcionarios.sql'
         )
 
         get_api_employees_data = PythonOperator(
@@ -72,7 +72,7 @@ with DAG(
         create_or_truncate_categories_table= PostgresOperator(
             task_id = 'create_or_truncate_dim_categorias',
             postgres_conn_id='bix_output_db',
-            sql='create_or_truncate_dim_categorias.sql'
+            sql='sql/create_or_truncate_dim_categorias.sql'
         )
 
 
@@ -85,17 +85,17 @@ with DAG(
 
     get_sales_data_to_db = GenericTransfer(
         task_id='get_sales_data_to_db',
-        sql = 'get_source_sales_data.sql',
+        sql = 'sql/get_source_sales_data.sql',
         destination_table = 'fato_vendas',
         source_conn_id = 'bix_vendas',
         destination_conn_id = 'bix_output_db',
-        preoperator = 'create_or_truncate_fato_vendas.sql'
+        preoperator = 'sql/create_or_truncate_fato_vendas.sql'
     )
 
     create_sales_view = PostgresOperator(
             task_id = 'create_sales_view',
             postgres_conn_id='bix_output_db',
-            sql='create_sales_view.sql'
+            sql='sql/create_sales_view.sql'
     )
 
     start >> sources_check >> [employees_pipeline,categories_pipeline,get_sales_data_to_db] >> create_sales_view
