@@ -12,7 +12,7 @@ class TestPostgresDBPipeline():
 
     def test_GenericTransfer_inputs_data_as_expected(self,bix_dag):
         """
-            Checks if data is
+            Checks if data is correctly transfered from input do output db
         """
 
         # get lines count from input db

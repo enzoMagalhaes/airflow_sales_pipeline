@@ -14,29 +14,30 @@
 ---
 
 
-# Estrutura de Pastas
+### Estrutura de Pastas
 
-  ├── dags
-       ├── bix_etl
-            ├── functions                 # onde ficam os python callables dos PythonOperators
-                 ├── helpers.py
-                 ├── source_checks.py
-            ├── populate_sales_dw.py      # arquivo que cria a DAG (orquestração)
-  ├── include                             
-       ├── sql                            # pasta onde se destinam os arquivos .sql utilizados
-            ├── ..sql files                
-  ├── logs                     
-  ├── plugins                             # pasta destinada aos sensors e operators customizados (vazio)
-       ├── operators
-       ├── sensors
-  ├── tests                               # pasta onde estão os testes automatizados
-      ├── integration_tests
-      ├── unit_tests
-      ├── validation_tests
-      ├── conftest.py
-  ├── docker-compose.yml                  # docker-compose de desenvolvimento (usa uma imagem extendida do airflow)
-  ├── docker-compose-prod.yml             # docker-compose de produção
-  ├── DockerFile                          # DockerFile que cria a imagem extendida do airflow (para desenvolvimento)
-  ├── setup_airflow.sh                    # instala o airflow da maquina e roda ele pela primeira vez
-  ├── .gitignore
-  └── README.md
+    .
+    ├── dags
+    │     ├── bix_etl
+    │          ├── functions                 # onde ficam os python callables dos PythonOperators
+    │          │     ├── helpers.py
+    │          │     ├── source_checks.py
+    │          ├── populate_sales_dw.py      # arquivo que cria a DAG (orquestração)
+    ├── include                             
+    │     ├── sql                            # pasta onde se destinam os arquivos .sql utilizados
+    │          ├── ..sql files                
+    ├── logs                     
+    ├── plugins                             # pasta destinada aos sensors e operators customizados (vazio)
+    │     ├── operators
+    │     ├── sensors
+    ├── tests                               # pasta onde estão os testes automatizados
+    │    ├── integration_tests
+    │    ├── unit_tests
+    │    ├── validation_tests
+    │    ├── conftest.py
+    ├── docker-compose.yml                  # docker-compose de desenvolvimento (usa uma imagem extendida do airflow)
+    ├── docker-compose-prod.yml             # docker-compose de produção
+    ├── DockerFile                          # DockerFile que cria a imagem extendida do airflow (para desenvolvimento)
+    ├── setup_airflow.sh                    # instala o airflow da maquina e roda ele pela primeira vez
+    ├── .gitignore
+    └── README.md

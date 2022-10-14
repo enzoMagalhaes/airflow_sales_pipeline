@@ -3,7 +3,6 @@ from datetime import datetime
 from pendulum import timezone
 from pandas import DataFrame
 
-import time
 class TestSalesViewGeneration:
 
     dag_id='bix_etl'
@@ -12,13 +11,15 @@ class TestSalesViewGeneration:
 
     def test_sales_view_is_generated_as_expected(self,bix_dag):
         """
-            checks if view is generated after whole dag run and
+            Checks if view is generated after whole dag run and
             columns have the expected names and data types
         """
         # drop view if it exists
         self.hook.run(sql="DROP VIEW IF EXISTS vendas;")
 
-        # execute whole dag
+        # clear task instances and execute whole dag
+        bix_dag.clear(start_date=self.test_execution_date,
+                      end_date=self.test_execution_date)
         bix_dag.run(start_date=self.test_execution_date,
                     end_date=self.test_execution_date,
                     run_backwards=False)
@@ -42,7 +43,7 @@ class TestSalesViewGeneration:
 
     def check_if_sales_view_has_the_expected_lines(self):
         """
-            gets the count of each table and assert that they have the same count
+            Gets the count of each table and assert that they have the same count
         """
         view_lines_count = self.hook.get_records(sql="SELECT COUNT(*) FROM vendas")[0][0]
         fact_table_lines_count = self.hook.get_records(sql="SELECT COUNT(*) FROM fato_vendas")[0][0]

@@ -5,6 +5,10 @@ from psycopg2.errors import UndefinedTable
 class TestApiPipeline():
 
     def test_get_api_task_returns_data_as_expected(self,bix_dag):
+        """
+            Checks if fetched data has the right format
+        """
+
         operator = bix_dag.get_task('employees_pipeline.get_api_employees_data_to_db')
         get_api_data = operator.python_callable
         employees_data  = get_api_data(testing=True)
@@ -16,6 +20,9 @@ class TestApiPipeline():
             assert isinstance(el[1],str) # assert second elemente is a name (string)
 
     def test_create_or_truncate_employees_table(self,bix_dag):
+        """
+            Checks if task successfully creates (or truncates) table
+        """
         output_postgres_hook = PostgresHook(postgres_conn_id='bix_output_db',schema='dw_vendas')
         output_postgres_hook.run(sql="DROP TABLE IF EXISTS dim_funcionarios CASCADE;")
 
