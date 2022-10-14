@@ -1,6 +1,6 @@
 .env
-iniciar.txt
-setup_airflow.sh
 logs/*
+!logs/.gitkeep
 __pycache__
-__init__.py
+dw_vendas
+.pytest_cache
