@@ -13,7 +13,6 @@ from bix_etl.functions.source_checks import (check_sales_db_availability,
                                              check_categories_parquet_api_availability)
 
 default_args = {
-
     'owner': 'bix_owner',
     'retries': 1,
     'retry_delay': timedelta(minutes=2)

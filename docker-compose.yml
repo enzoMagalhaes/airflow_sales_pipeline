@@ -64,11 +64,11 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
 
-    # ADDING include FOLDER INSIDE WORKER DOCKER IMG
+    # ADDING include FOLDER INSIDE WORKER DOCKER IMG #
     - ./include:/opt/airflow/include
     ################################################
 
-    # ADDING tests FOLDER INSIDE WORKER DOCKER IMG
+    # ADDING tests FOLDER INSIDE WORKER DOCKER IMG #
     - ./tests:/opt/airflow/tests
     ################################################
 
