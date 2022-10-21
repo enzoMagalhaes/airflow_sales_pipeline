@@ -23,6 +23,9 @@ x-airflow-common:
     # adding include folder to airflow volumes
     - ./include:/opt/airflow/include
     # - ./tests:/opt/airflow/tests # not needed in production
+    - ./setup_connections.py:/opt/airflow/setup_connections.py
+
+
 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:

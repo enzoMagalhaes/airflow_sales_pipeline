@@ -71,6 +71,7 @@ x-airflow-common:
     # ADDING tests FOLDER INSIDE WORKER DOCKER IMG #
     - ./tests:/opt/airflow/tests
     ################################################
+    - ./setup_connections.py:/opt/airflow/setup_connections.py
 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:

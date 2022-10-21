@@ -4,3 +4,4 @@ logs/*
 __pycache__
 dw_vendas
 .pytest_cache
+setup_connections.py
